@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الجرد</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --border: #dee2e6;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.4;
+            padding-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        /* الهيدر المخفّض */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 6px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            height: 40px;
+        }
+        
+        .header-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .menu-icon {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .menu-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 3px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 8px 12px;
+            color: var(--dark);
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item i {
+            margin-left: 6px;
+            width: 16px;
+            text-align: center;
+        }
+        
+        /* المحتوى الرئيسي */
+        .container {
+            padding: 10px;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        /* قسم إضافة الصنف - اسم ورقم في نفس السطر */
+        .input-section {
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: var(--shadow);
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: nowrap;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 0.85rem;
+            transition: border-color 0.3s;
+            height: 32px;
+        }
+        
+        .form-input::placeholder {
+            color: #666;
+        }
+        
+        .form-input:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        
+        /* تخصيص أحجام الحقول */
+        .product-name {
+            flex: 0 0 70%;
+        }
+        
+        .product-number {
+            flex: 0 0 29%;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-wrap: wrap;
+            }
+            .product-name,
+            .product-number {
+                flex: 0 0 100%;
+            }
+        }
+        
+        /* القائمة المنسدلة للبحث */
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 0 0 3px 3px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        
+        .autocomplete-list.show {
+            display: block;
+        }
+        
+        .autocomplete-item {
+            padding: 6px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+        
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background-color: #f0f8ff;
+        }
+        
+        /* قسم الكميات */
+        .quantity-section {
+            margin-bottom: 8px;
+        }
+        
+        .quantity-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+            align-items: center;
+        }
+        
+        .quantity-input {
+            flex: 0 0 40%;
+        }
+        
+        .expiry-input {
+            flex: 0 0 40%;
+            position: relative;
+        }
+        
+        .delete-row-btn {
+            flex: 0 0 18%;
+            background-color: #ffebee;
+            color: var(--danger);
+            border: none;
+            border-radius: 3px;
+            padding: 6px 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            height: 32px;
+            transition: background-color 0.2s;
+        }
+        
+        .delete-row-btn:hover {
+            background-color: #ffcdd2;
+        }
+        
+        .add-row-btn {
+            background-color: #e8f5e9;
+            color: var(--success);
+            border: 1px dashed #c8e6c9;
+            border-radius: 3px;
+            padding: 6px;
+            width: 100%;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 4px;
+            height: 32px;
+            transition: background-color 0.2s;
+        }
+        
+        .add-row-btn:hover {
+            background-color: #c8e6c9;
+        }
+        
+        /* أزرار التحكم */
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            height: 34px;
+        }
+        
+        .btn-save {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background-color: #219653;
+        }
+        
+        .btn-cancel {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #e0e0e0;
+        }
+        
+        /* الجدول المعدل - كل صنف في صف واحد */
+        .table-container {
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: var(--shadow);
+            padding: 10px;
+            overflow-x: auto;
+            margin-top: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .table-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 6px 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        /* تثبيت العمود الأول والثاني وعمود الإجمالي */
+        th:first-child,
+        td:first-child,
+        th:nth-child(2),
+        td:nth-child(2),
+        th:last-child,
+        td:last-child {
+            position: sticky;
+            background-color: white;
+            z-index: 5;
+        }
+        
+        th:first-child,
+        td:first-child,
+        th:nth-child(2),
+        td:nth-child(2) {
+            left: 0;
+        }
+        
+        th:last-child,
+        td:last-child {
+            right: 0;
+            background-color: #f0f8ff;
+        }
+        
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .action-cell {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            padding: 3px 6px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background-color 0.2s;
+            min-width: 50px;
+        }
+        
+        .edit-btn {
+            background-color: #e3f2fd;
+            color: var(--secondary);
+        }
+        
+        .edit-btn:hover {
+            background-color: #bbdefb;
+        }
+        
+        .delete-btn {
+            background-color: #ffebee;
+            color: var(--danger);
+        }
+        
+        .delete-btn:hover {
+            background-color: #ffcdd2;
+        }
+        
+        /* تنسيق خاص للأعمدة */
+        .total-col {
+            background-color: #e8f5e9 !important;
+            font-weight: bold;
+        }
+        
+        .qty-col, .expiry-col {
+            min-width: 80px;
+        }
+        
+        /* نافذة اختيار التاريخ */
+        .date-picker-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .date-picker-modal.show {
+            display: flex;
+        }
+        
+        .date-picker {
+            background-color: white;
+            width: 90%;
+            max-width: 280px;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .date-picker-header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        
+        .date-picker-body {
+            padding: 12px;
+        }
+        
+        .date-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .month-selector, .year-selector {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .date-label {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+            font-size: 0.85rem;
+        }
+        
+        .month-year-value {
+            font-size: 1.2rem;
+            margin: 8px 0;
+            color: var(--primary);
+        }
+        
+        .month-year-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .month-year-btn {
+            background-color: #f0f0f0;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .month-year-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .date-picker-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        /* نافذة التحميل */
+        .loading-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-modal.show {
+            display: flex;
+        }
+        
+        .loading-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 3px;
+            text-align: center;
+            min-width: 180px;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--secondary);
+            width: 28px;
+            height: 28px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* تنبيهات */
+        .alert {
+            padding: 8px 10px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            display: none;
+            font-size: 0.85rem;
+        }
+        
+        .alert.show {
+            display: block;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        /* تذييل الصفحة */
+        footer {
+            text-align: center;
+            padding: 8px;
+            color: #666;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+        
+        /* رسالة عند عدم وجود بيانات */
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر المخفّض -->
+    <header>
+        <div class="header-title">تطبيق الجرد</div>
+        <button class="menu-icon" id="menuToggle">
+            <i class="fas fa-cog"></i>
+        </button>
+        
+        <!-- القائمة المنسدلة -->
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="#" class="dropdown-item" id="importData">
+                <i class="fas fa-file-import"></i> استيراد من جوجل شيت
+            </a>
+            <a href="#" class="dropdown-item" id="syncData">
+                <i class="fas fa-sync-alt"></i> مزامنة البيانات
+            </a>
+            <a href="#" class="dropdown-item" id="exportData">
+                <i class="fas fa-file-export"></i> تصدير البيانات
+            </a>
+            <a href="#" class="dropdown-item" id="clearData">
+                <i class="fas fa-trash-alt"></i> مسح البيانات المحلية
+            </a>
+        </div>
+    </header>
+    
+    <!-- المحتوى الرئيسي -->
+    <div class="container">
+        <!-- تنبيهات -->
+        <div class="alert" id="alertMessage"></div>
+        
+        <!-- نموذج إضافة الصنف -->
+        <div class="input-section">
+            <div class="form-row">
+                <div class="form-group product-name">
+                    <input type="text" class="form-input" id="productName" placeholder="اسم الصنف">
+                    <div class="autocomplete-list" id="autocompleteList"></div>
+                </div>
+                
+                <div class="form-group product-number">
+                    <input type="text" class="form-input" id="productNumber" placeholder="رقم الصنف">
+                </div>
+            </div>
+        </div>
+        
+        <!-- قسم الكميات -->
+        <div class="quantity-section">
+            <div class="quantity-rows-container" id="quantityRowsContainer">
+                <!-- صفوف الكمية ستُضاف هنا ديناميكياً -->
+            </div>
+            
+            <button class="add-row-btn" id="addQuantityRow">
+                <i class="fas fa-plus"></i> إضافة كمية وتاريخ انتهاء
+            </button>
+        </div>
+        
+        <!-- أزرار التحكم -->
+        <div class="action-buttons">
+            <button class="btn btn-save" id="saveBtn">حفظ</button>
+            <button class="btn btn-cancel" id="clearBtn">إلغاء</button>
+        </div>
+        
+        <!-- الجدول المعدل -->
+        <div class="table-container">
+            <div class="table-title">سجل الجرد</div>
+            <div id="tableWrapper">
+                <!-- الجدول سيتم إنشاؤه ديناميكياً -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة اختيار التاريخ -->
+    <div class="date-picker-modal" id="datePickerModal">
+        <div class="date-picker">
+            <div class="date-picker-header">اختر تاريخ الانتهاء</div>
+            <div class="date-picker-body">
+                <div class="date-selector">
+                    <div class="month-selector">
+                        <div class="date-label">الشهر</div>
+                        <div class="month-year-value" id="selectedMonth">8</div>
+                        <div class="month-year-controls">
+                            <button class="month-year-btn" id="monthUp">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button class="month-year-btn" id="monthDown">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="year-selector">
+                        <div class="date-label">السنة</div>
+                        <div class="month-year-value" id="selectedYear">2027</div>
+                        <div class="month-year-controls">
+                            <button class="month-year-btn" id="yearUp">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button class="month-year-btn" id="yearDown">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="date-picker-actions">
+                    <button class="btn btn-save" id="confirmDate">تأكيد</button>
+                    <button class="btn btn-cancel" id="cancelDate">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة التحميل -->
+    <div class="loading-modal" id="loadingModal">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p id="loadingText">جاري معالجة البيانات...</p>
+        </div>
+    </div>
+    
+    <!-- تذييل الصفحة -->
+    <footer>
+        تطبيق الجرد &copy; 2023 - متصل بجوجل شيت
+    </footer>
+    
+    <script>
+        // بيانات التطبيق
+        let inventoryData = [];
+        let products = [];
+        let currentProductId = null;
+        let currentDateInput = null;
+        let selectedMonth = 8;
+        let selectedYear = 2027;
+        
+        // رابط جوجل شيتس الصحيح
+        const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmTy6jqk_sWNtuUPBMVYCL50mUL0LV-dqjilN_yv9IczIA7-gzfxFUmH0dVhitQAe8Lh6xx4NBz8X9/pub?output=csv';
+        
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+        
+        function initApp() {
+            loadLocalData();
+            setupEventListeners();
+            addQuantityRow();
+            renderInventoryTable();
+        }
+        
+        function setupEventListeners() {
+            // القائمة المنسدلة
+            document.getElementById('menuToggle').addEventListener('click', toggleDropdownMenu);
+            
+            document.addEventListener('click', function(event) {
+                const menuToggle = document.getElementById('menuToggle');
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                
+                if (!menuToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+            
+            // خيارات القائمة
+            document.getElementById('importData').addEventListener('click', importFromGoogleSheets);
+            document.getElementById('syncData').addEventListener('click', syncWithGoogleSheets);
+            document.getElementById('exportData').addEventListener('click', exportToCSV);
+            document.getElementById('clearData').addEventListener('click', clearLocalData);
+            
+            // البحث عن الأصناف
+            document.getElementById('productName').addEventListener('input', handleProductSearch);
+            document.getElementById('productName').addEventListener('focus', handleProductSearch);
+            
+            // إغلاق البحث عند النقر خارج
+            document.addEventListener('click', function(event) {
+                const autocompleteList = document.getElementById('autocompleteList');
+                const productNameInput = document.getElementById('productName');
+                
+                if (!productNameInput.contains(event.target) && !autocompleteList.contains(event.target)) {
+                    autocompleteList.classList.remove('show');
+                }
+            });
+            
+            // إضافة صف كمية
+            document.getElementById('addQuantityRow').addEventListener('click', addQuantityRow);
+            
+            // أزرار التحكم
+            document.getElementById('saveBtn').addEventListener('click', saveProductData);
+            document.getElementById('clearBtn').addEventListener('click', clearForm);
+            
+            // منتقي التاريخ
+            document.getElementById('monthUp').addEventListener('click', () => changeMonth(1));
+            document.getElementById('monthDown').addEventListener('click', () => changeMonth(-1));
+            document.getElementById('yearUp').addEventListener('click', () => changeYear(1));
+            document.getElementById('yearDown').addEventListener('click', () => changeYear(-1));
+            document.getElementById('confirmDate').addEventListener('click', confirmDateSelection);
+            document.getElementById('cancelDate').addEventListener('click', cancelDateSelection);
+        }
+        
+        function toggleDropdownMenu() {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('show');
+        }
+        
+        function handleProductSearch() {
+            const input = document.getElementById('productName');
+            const query = input.value.trim();
+            const autocompleteList = document.getElementById('autocompleteList');
+            
+            if (query.length === 0) {
+                autocompleteList.classList.remove('show');
+                return;
+            }
+            
+            const filteredProducts = products.filter(product => 
+                product.name && product.name.includes(query) || 
+                product.number && product.number.includes(query)
+            );
+            
+            autocompleteList.innerHTML = '';
+            
+            if (filteredProducts.length > 0) {
+                filteredProducts.forEach(product => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.textContent = `${product.name} (${product.number})`;
+                    item.dataset.id = product.id;
+                    item.dataset.name = product.name;
+                    item.dataset.number = product.number;
+                    
+                    item.addEventListener('click', function() {
+                        selectProduct(product.id, product.name, product.number);
+                    });
+                    
+                    autocompleteList.appendChild(item);
+                });
+            } else {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `<i class="fas fa-plus"></i> إضافة "${query}" كصنف جديد`;
+                item.addEventListener('click', function() {
+                    addNewProduct(query);
+                });
+                autocompleteList.appendChild(item);
+            }
+            
+            autocompleteList.classList.add('show');
+        }
+        
+        function selectProduct(id, name, number) {
+            document.getElementById('productName').value = name;
+            document.getElementById('productNumber').value = number;
+            document.getElementById('autocompleteList').classList.remove('show');
+            
+            currentProductId = id;
+            loadProductQuantities(id);
+        }
+        
+        function addNewProduct(name) {
+            const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 1000;
+            const newId = maxId + 1;
+            const newNumber = newId.toString();
+            
+            const newProduct = {
+                id: newId,
+                name: name,
+                number: newNumber
+            };
+            
+            products.push(newProduct);
+            document.getElementById('productName').value = name;
+            document.getElementById('productNumber').value = newNumber;
+            document.getElementById('autocompleteList').classList.remove('show');
+            
+            currentProductId = newId;
+            showAlert(`تم إضافة الصنف "${name}"`, 'success');
+        }
+        
+        function loadProductQuantities(productId) {
+            const productData = inventoryData.filter(item => item.productId === productId);
+            const container = document.getElementById('quantityRowsContainer');
+            
+            const rows = container.querySelectorAll('.quantity-row');
+            rows.forEach(row => row.remove());
+            
+            if (productData.length > 0) {
+                productData.forEach(item => {
+                    addQuantityRow(item.quantity, item.expiryDate);
+                });
+            } else {
+                addQuantityRow();
+            }
+        }
+        
+        function addQuantityRow(quantity = '', expiryDate = '') {
+            const container = document.getElementById('quantityRowsContainer');
+            const rowId = Date.now();
+            
+            const row = document.createElement('div');
+            row.className = 'quantity-row';
+            row.id = `row-${rowId}`;
+            
+            row.innerHTML = `
+                <div class="quantity-input">
+                    <input type="number" class="form-input quantity-value" placeholder="الكمية" min="1" value="${quantity}">
+                </div>
+                <div class="expiry-input">
+                    <input type="text" class="form-input expiry-date" placeholder="تاريخ الانتهاء" readonly value="${expiryDate}">
+                </div>
+                <button class="delete-row-btn" onclick="deleteQuantityRow('${rowId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            const expiryInput = row.querySelector('.expiry-date');
+            expiryInput.addEventListener('click', function() {
+                openDatePicker(this);
+            });
+            
+            container.appendChild(row);
+            
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+        
+        function deleteQuantityRow(rowId) {
+            const row = document.getElementById(`row-${rowId}`);
+            if (row) row.remove();
+        }
+        
+        function openDatePicker(inputElement) {
+            currentDateInput = inputElement;
+            
+            if (inputElement.value) {
+                const parts = inputElement.value.split('/');
+                if (parts.length === 2) {
+                    selectedMonth = parseInt(parts[0]);
+                    selectedYear = parseInt(parts[1]);
+                }
+            }
+            
+            updateDatePicker();
+            document.getElementById('datePickerModal').classList.add('show');
+        }
+        
+        function updateDatePicker() {
+            document.getElementById('selectedMonth').textContent = selectedMonth;
+            document.getElementById('selectedYear').textContent = selectedYear;
+        }
+        
+        function changeMonth(change) {
+            selectedMonth += change;
+            if (selectedMonth < 1) selectedMonth = 12;
+            if (selectedMonth > 12) selectedMonth = 1;
+            updateDatePicker();
+        }
+        
+        function changeYear(change) {
+            selectedYear += change;
+            updateDatePicker();
+        }
+        
+        function confirmDateSelection() {
+            if (currentDateInput) {
+                currentDateInput.value = `${selectedMonth}/${selectedYear}`;
+            }
+            closeDatePicker();
+        }
+        
+        function cancelDateSelection() {
+            closeDatePicker();
+        }
+        
+        function closeDatePicker() {
+            document.getElementById('datePickerModal').classList.remove('show');
+            currentDateInput = null;
+        }
+        
+        function saveProductData() {
+            const productName = document.getElementById('productName').value.trim();
+            const productNumber = document.getElementById('productNumber').value.trim();
+            
+            if (!productName || !productNumber) {
+                showAlert('يرجى إدخال اسم ورقم الصنف', 'error');
+                return;
+            }
+            
+            const quantityRows = document.querySelectorAll('.quantity-row');
+            const quantities = [];
+            
+            quantityRows.forEach(row => {
+                const quantityInput = row.querySelector('.quantity-value');
+                const expiryInput = row.querySelector('.expiry-date');
+                
+                const quantity = parseInt(quantityInput.value);
+                const expiryDate = expiryInput.value;
+                
+                if (quantity && quantity > 0 && expiryDate) {
+                    quantities.push({
+                        quantity: quantity,
+                        expiryDate: expiryDate
+                    });
+                }
+            });
+            
+            if (quantities.length === 0) {
+                showAlert('يرجى إدخال كمية وتاريخ انتهاء على الأقل', 'error');
+                return;
+            }
+            
+            let product = products.find(p => p.number === productNumber);
+            
+            if (!product) {
+                const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 1000;
+                product = {
+                    id: maxId + 1,
+                    name: productName,
+                    number: productNumber
+                };
+                products.push(product);
+            } else if (product.name !== productName) {
+                product.name = productName;
+            }
+            
+            currentProductId = product.id;
+            
+            // حذف البيانات القديمة لهذا المنتج
+            inventoryData = inventoryData.filter(item => item.productId !== product.id);
+            
+            // إضافة البيانات الجديدة
+            quantities.forEach(item => {
+                inventoryData.push({
+                    id: Date.now() + Math.random(),
+                    productId: product.id,
+                    productName: product.name,
+                    productNumber: product.number,
+                    quantity: item.quantity,
+                    expiryDate: item.expiryDate,
+                    dateAdded: new Date().toLocaleDateString('ar-SA'),
+                    lastModified: new Date().toISOString()
+                });
+            });
+            
+            saveLocalData();
+            renderInventoryTable();
+            clearForm();
+            
+            showAlert('تم حفظ البيانات بنجاح', 'success');
+        }
+        
+        function clearForm() {
+            document.getElementById('productName').value = '';
+            document.getElementById('productNumber').value = '';
+            document.getElementById('autocompleteList').classList.remove('show');
+            
+            const container = document.getElementById('quantityRowsContainer');
+            const rows = container.querySelectorAll('.quantity-row');
+            rows.forEach(row => row.remove());
+            
+            addQuantityRow();
+            currentProductId = null;
+        }
+        
+        function renderInventoryTable() {
+            const tableWrapper = document.getElementById('tableWrapper');
+            
+            if (inventoryData.length === 0) {
+                tableWrapper.innerHTML = `
+                    <div class="no-data">
+                        لا توجد بيانات مخزنة بعد. استخدم زر الاستيراد لجلب البيانات من جوجل شيتس
+                    </div>
+                `;
+                return;
+            }
+            
+            // تجميع البيانات حسب المنتج
+            const groupedData = {};
+            inventoryData.forEach(item => {
+                if (!groupedData[item.productId]) {
+                    groupedData[item.productId] = {
+                        productName: item.productName,
+                        productNumber: item.productNumber,
+                        quantities: [],
+                        expiries: [],
+                        totalQuantity: 0
+                    };
+                }
+                groupedData[item.productId].quantities.push(item.quantity);
+                groupedData[item.productId].expiries.push(item.expiryDate);
+                groupedData[item.productId].totalQuantity += item.quantity;
+            });
+            
+            // حساب أقصى عدد للكميات
+            let maxQuantities = 0;
+            Object.values(groupedData).forEach(product => {
+                if (product.quantities.length > maxQuantities) {
+                    maxQuantities = product.quantities.length;
+                }
+            });
+            
+            // بناء الجدول
+            let tableHTML = `
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th width="80">رقم الصنف</th>
+                            <th width="150">اسم الصنف</th>
+            `;
+            
+            // إضافة أعمدة الكميات والتواريخ
+            for (let i = 1; i <= maxQuantities; i++) {
+                tableHTML += `
+                    <th class="qty-col">الكمية ${i}</th>
+                    <th class="expiry-col">الانتهاء ${i}</th>
+                `;
+            }
+            
+            tableHTML += `
+                            <th width="80" class="total-col">الإجمالي</th>
+                            <th width="120">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // إضافة الصفوف
+            Object.keys(groupedData).forEach(productId => {
+                const product = groupedData[productId];
+                tableHTML += `
+                    <tr>
+                        <td>${product.productNumber}</td>
+                        <td>${product.productName}</td>
+                `;
+                
+                // إضافة الكميات والتواريخ
+                for (let i = 0; i < maxQuantities; i++) {
+                    if (i < product.quantities.length) {
+                        tableHTML += `
+                            <td>${product.quantities[i]}</td>
+                            <td>${product.expiries[i]}</td>
+                        `;
+                    } else {
+                        tableHTML += `
+                            <td></td>
+                            <td></td>
+                        `;
+                    }
+                }
+                
+                tableHTML += `
+                        <td class="total-col">${product.totalQuantity}</td>
+                        <td class="action-cell">
+                            <button class="action-btn edit-btn" onclick="editProduct('${productId}')">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct('${productId}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            tableWrapper.innerHTML = tableHTML;
+        }
+        
+        function editProduct(productId) {
+            const product = products.find(p => p.id == productId);
+            if (product) {
+                selectProduct(product.id, product.name, product.number);
+                showAlert('يمكنك الآن تعديل بيانات الصنف', 'success');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+        
+        function deleteProduct(productId) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج وجميع كمياته؟')) {
+                inventoryData = inventoryData.filter(item => item.productId != productId);
+                products = products.filter(p => p.id != productId);
+                saveLocalData();
+                renderInventoryTable();
+                showAlert('تم حذف المنتج بنجاح', 'success');
+            }
+        }
+        
+        // استيراد البيانات من جوجل شيتس
+        async function importFromGoogleSheets() {
+            showLoading('جاري استيراد البيانات من جوجل شيت...');
+            
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL);
+                if (!response.ok) {
+                    throw new Error('فشل في تحميل البيانات من جوجل شيتس');
+                }
+                
+                const csvText = await response.text();
+                const rows = csvText.split('\n').filter(row => row.trim() !== '');
+                
+                if (rows.length === 0) {
+                    showLoading(false);
+                    showAlert('الجدول فارغ في جوجل شيتس. يمكنك إضافة بيانات أولاً.', 'warning');
+                    return;
+                }
+                
+                // مسح البيانات الحالية
+                const keepLocalData = confirm('هل تريد الاحتفاظ بالبيانات الحالية؟ إذا ضغطت "إلغاء" سيتم استبدال جميع البيانات.');
+                
+                if (!keepLocalData) {
+                    inventoryData = [];
+                    products = [];
+                }
+                
+                let importedCount = 0;
+                let skippedCount = 0;
+                
+                // تخطي العنوان إذا كان موجوداً
+                const startRow = rows[0].includes('رقم الصنف') || rows[0].includes('اسم الصنف') ? 1 : 0;
+                
+                for (let i = startRow; i < rows.length; i++) {
+                    const row = rows[i];
+                    const columns = row.split(',').map(col => col.trim());
+                    
+                    // تخطي الأسطر الفارغة أو التي تحتوي على فهرس فقط
+                    if (columns.length >= 4 && columns[0] && columns[1] && columns[2] && columns[3]) {
+                        // البحث عن أعمدة البيانات
+                        // افتراض: العمود الأول هو رقم الصنف، الثاني هو اسم الصنف، الثالث هو الكمية، الرابع هو تاريخ الانتهاء
+                        let productNumber = columns[0];
+                        let productName = columns[1];
+                        let quantity = parseInt(columns[2]) || 0;
+                        let expiryDate = columns[3] || '';
+                        
+                        // تحويل التاريخ من 2027/6 إلى 6/2027 إذا لزم الأمر
+                        const formattedExpiryDate = formatDate(expiryDate);
+                        
+                        if (productNumber && productName && quantity > 0 && formattedExpiryDate) {
+                            // البحث عن المنتج
+                            let product = products.find(p => p.number === productNumber);
+                            
+                            if (!product) {
+                                const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 1000;
+                                product = {
+                                    id: maxId + 1,
+                                    name: productName,
+                                    number: productNumber
+                                };
+                                products.push(product);
+                            }
+                            
+                            // تجنب التكرار
+                            const exists = inventoryData.find(item => 
+                                item.productId === product.id && 
+                                item.quantity === quantity && 
+                                item.expiryDate === formattedExpiryDate
+                            );
+                            
+                            if (!exists) {
+                                inventoryData.push({
+                                    id: Date.now() + i,
+                                    productId: product.id,
+                                    productName: productName,
+                                    productNumber: productNumber,
+                                    quantity: quantity,
+                                    expiryDate: formattedExpiryDate,
+                                    dateAdded: new Date().toLocaleDateString('ar-SA'),
+                                    source: 'google_sheets',
+                                    importedAt: new Date().toISOString()
+                                });
+                                importedCount++;
+                            } else {
+                                skippedCount++;
+                            }
+                        }
+                    }
+                }
+                
+                saveLocalData();
+                renderInventoryTable();
+                showLoading(false);
+                
+                if (importedCount === 0 && skippedCount === 0) {
+                    showAlert('لم يتم العثور على بيانات صالحة للاستيراد. تأكد من تنسيق البيانات في الجدول', 'warning');
+                } else {
+                    showAlert(`تم استيراد ${importedCount} سجل جديد، وتخطي ${skippedCount} سجل مكرر`, 'success');
+                }
+                
+            } catch (error) {
+                console.error('خطأ في الاستيراد:', error);
+                showLoading(false);
+                showAlert(`فشل استيراد البيانات: ${error.message}`, 'error');
+            }
+        }
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            
+            // إذا كان التاريخ بصيغة 2027/6، نحوله إلى 6/2027
+            if (dateStr.match(/^\d{4}\/\d{1,2}$/)) {
+                const parts = dateStr.split('/');
+                return `${parts[1]}/${parts[0]}`;
+            }
+            
+            return dateStr;
+        }
+        
+        // مزامنة مع جوجل شيتس
+        async function syncWithGoogleSheets() {
+            showLoading('جاري مزامنة البيانات مع جوجل شيت...');
+            
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL);
+                if (!response.ok) {
+                    throw new Error('فشل في الاتصال بجوجل شيتس');
+                }
+                
+                const csvText = await response.text();
+                const rows = csvText.split('\n').filter(row => row.trim() !== '');
+                
+                if (rows.length === 0) {
+                    showLoading(false);
+                    showAlert('الجدول فارغ في جوجل شيتس', 'warning');
+                    return;
+                }
+                
+                const startRow = rows[0].includes('رقم الصنف') || rows[0].includes('اسم الصنف') ? 1 : 0;
+                let syncedCount = 0;
+                let addedCount = 0;
+                
+                for (let i = startRow; i < rows.length; i++) {
+                    const row = rows[i];
+                    const columns = row.split(',').map(col => col.trim());
+                    
+                    if (columns.length >= 4 && columns[0] && columns[1] && columns[2] && columns[3]) {
+                        const productNumber = columns[0];
+                        const productName = columns[1];
+                        const quantity = parseInt(columns[2]) || 0;
+                        const expiryDate = formatDate(columns[3] || '');
+                        
+                        if (productNumber && productName && quantity > 0 && expiryDate) {
+                            let product = products.find(p => p.number === productNumber);
+                            
+                            if (!product) {
+                                const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 1000;
+                                product = {
+                                    id: maxId + 1,
+                                    name: productName,
+                                    number: productNumber
+                                };
+                                products.push(product);
+                                addedCount++;
+                            }
+                            
+                            // البحث عن نفس البيانات في المخزن المحلي
+                            const existingItem = inventoryData.find(item => 
+                                item.productId === product.id && 
+                                item.quantity === quantity && 
+                                item.expiryDate === expiryDate
+                            );
+                            
+                            if (!existingItem) {
+                                inventoryData.push({
+                                    id: Date.now() + i,
+                                    productId: product.id,
+                                    productName: productName,
+                                    productNumber: productNumber,
+                                    quantity: quantity,
+                                    expiryDate: expiryDate,
+                                    dateAdded: new Date().toLocaleDateString('ar-SA'),
+                                    source: 'google_sheets_sync',
+                                    syncedAt: new Date().toISOString()
+                                });
+                                syncedCount++;
+                            }
+                        }
+                    }
+                }
+                
+                saveLocalData();
+                renderInventoryTable();
+                showLoading(false);
+                
+                if (syncedCount === 0 && addedCount === 0) {
+                    showAlert('جميع البيانات متزامنة بالفعل', 'success');
+                } else {
+                    showAlert(`تمت المزامنة بنجاح: ${syncedCount} سجل جديد، ${addedCount} منتج جديد`, 'success');
+                }
+                
+            } catch (error) {
+                console.error('خطأ في المزامنة:', error);
+                showLoading(false);
+                showAlert(`فشلت المزامنة: ${error.message}`, 'error');
+            }
+        }
+        
+        // تصدير البيانات إلى ملف CSV
+        function exportToCSV() {
+            showLoading('جاري تحضير البيانات للتصدير...');
+            
+            setTimeout(() => {
+                try {
+                    if (inventoryData.length === 0) {
+                        showLoading(false);
+                        showAlert('لا توجد بيانات للتصدير', 'warning');
+                        return;
+                    }
+                    
+                    // إنشاء محتوى CSV
+                    let csvContent = "رقم الصنف,اسم الصنف,الكمية,تاريخ الانتهاء,تاريخ الإضافة\n";
+                    
+                    inventoryData.forEach(item => {
+                        csvContent += `"${item.productNumber}","${item.productName}",${item.quantity},"${item.expiryDate}","${item.dateAdded}"\n`;
+                    });
+                    
+                    // إنشاء رابط تحميل
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    const url = URL.createObjectURL(blob);
+                    
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `جرد_المنتجات_${new Date().toISOString().slice(0,10)}.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showLoading(false);
+                    showAlert(`تم تصدير ${inventoryData.length} سجل إلى ملف CSV`, 'success');
+                    
+                } catch (error) {
+                    console.error('خطأ في التصدير:', error);
+                    showLoading(false);
+                    showAlert('فشل تصدير البيانات', 'error');
+                }
+            }, 500);
+        }
+        
+        function clearLocalData() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات المحلية؟ سيتم حذف جميع المنتجات والكميات.')) {
+                inventoryData = [];
+                products = [];
+                saveLocalData();
+                renderInventoryTable();
+                clearForm();
+                showAlert('تم مسح جميع البيانات المحلية', 'success');
+            }
+        }
+        
+        function showLoading(message = false) {
+            const modal = document.getElementById('loadingModal');
+            const text = document.getElementById('loadingText');
+            
+            if (message) {
+                text.textContent = message;
+                modal.classList.add('show');
+            } else {
+                modal.classList.remove('show');
+            }
+        }
+        
+        function showAlert(message, type) {
+            const alertElement = document.getElementById('alertMessage');
+            alertElement.textContent = message;
+            alertElement.className = `alert alert-${type} show`;
+            
+            setTimeout(() => {
+                alertElement.classList.remove('show');
+            }, 4000);
+        }
+        
+        function saveLocalData() {
+            try {
+                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                localStorage.setItem('products', JSON.stringify(products));
+            } catch (e) {
+                console.error('خطأ في حفظ البيانات:', e);
+                showAlert('خطأ في حفظ البيانات المحلية', 'error');
+            }
+        }
+        
+        function loadLocalData() {
+            try {
+                const savedData = localStorage.getItem('inventoryData');
+                const savedProducts = localStorage.getItem('products');
+                
+                if (savedData) inventoryData = JSON.parse(savedData);
+                if (savedProducts) products = JSON.parse(savedProducts);
+            } catch (e) {
+                console.error('خطأ في تحميل البيانات:', e);
+                inventoryData = [];
+                products = [];
+            }
+        }
+        
+        // جعل الدوال متاحة عالمياً
+        window.deleteQuantityRow = deleteQuantityRow;
+        window.editProduct = editProduct;
+        window.deleteProduct = deleteProduct;
+    </script>
+</body>
+</html>
