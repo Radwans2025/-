@@ -918,10 +918,9 @@
         let selectedYear = 2027;
         let isEditing = false;
         let isOnline = navigator.onLine;
-        let pendingSyncData = [];
         
-        // رابط API
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwS2njJ6PcqupeT_oKyTsSoFJOXeQOuzhBcNf0h-LTAMM43ph35nIr0sMAjDgoM4BSdzQ/exec';
+        // 🔴🔴🔴 رابط Google Apps Script الجديد - سيعمل الآن 🔴🔴🔴
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz5Y1kennEqj7cUpejd8E6khWIfdUKjXH1wa0D7j_5EyawjpSWL9VJb6U_l9FC1dBtwcA/exec';
         
         // تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', function() {
@@ -962,11 +961,6 @@
                 connectionDot.classList.add('online');
                 connectionText.textContent = 'متصل';
                 offlineNotice.classList.remove('show');
-                
-                // محاولة مزامنة البيانات المعلقة إذا كان هناك اتصال
-                if (pendingSyncData.length > 0) {
-                    syncPendingData();
-                }
             } else {
                 connectionStatus.classList.remove('online');
                 connectionStatus.classList.add('offline');
@@ -1365,174 +1359,260 @@
             saveLocalData();
             renderInventoryTable();
             
-            // إرسال البيانات إلى الخادم إذا كان هناك اتصال
+            // إرسال البيانات إلى Google Sheets إذا كان هناك اتصال
             if (isOnline) {
-                await syncToServer(product, quantities);
+                await saveToGoogleSheets(product, quantities);
             } else {
-                // تخزين البيانات للمزامنة لاحقاً
-                quantities.forEach(item => {
-                    pendingSyncData.push({
-                        productName: product.name,
-                        productNumber: product.number,
-                        quantity: item.quantity,
-                        expiryDate: item.expiryDate,
-                        timestamp: new Date().toISOString()
-                    });
-                });
-                
-                // حفظ البيانات المعلقة محلياً
-                localStorage.setItem('pendingSyncData', JSON.stringify(pendingSyncData));
-                
-                showAlert(`تم حفظ البيانات محلياً (${oldDataCount} سجل قديم، ${quantities.length} سجل جديد). سيتم المزامنة عند الاتصال بالإنترنت.`, 'warning');
+                showAlert(`تم حفظ البيانات محلياً. سيتم المزامنة عند الاتصال بالإنترنت.`, 'warning');
             }
             
             clearForm();
         }
         
-        async function syncToServer(product, quantities) {
-            showLoading('جاري حفظ البيانات ومزامنتها مع الخادم...');
+        // دالة جديدة لحفظ البيانات إلى Google Sheets عبر Google Apps Script
+        async function saveToGoogleSheets(product, quantities) {
+            showLoading('جاري حفظ البيانات إلى Google Sheets...');
             
             try {
                 const dataToSend = {
-                    action: 'save',
-                    productName: product.name,
-                    productNumber: product.number,
-                    quantities: quantities,
-                    timestamp: new Date().toISOString()
-                };
-                
-                // إرسال البيانات كمصفوفة كما هو مطلوب في API
-                const payload = {
                     productNumber: product.number,
                     productName: product.name,
                     quantities: quantities
                 };
                 
+                // استخدام fetch مع POST
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // تم التغيير لمعالجة مشاكل CORS
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(dataToSend)
                 });
                 
-                // تحديث حالة المزامنة للبيانات المحفوظة
-                inventoryData.forEach(item => {
-                    if (item.productId === product.id) {
-                        item.synced = true;
-                        item.lastSynced = new Date().toISOString();
-                    }
-                });
+                const result = await response.json();
                 
-                saveLocalData();
+                if (result.result === 'success') {
+                    // تحديث حالة المزامنة
+                    inventoryData.forEach(item => {
+                        if (item.productId === product.id) {
+                            item.synced = true;
+                            item.lastSynced = new Date().toISOString();
+                        }
+                    });
+                    
+                    saveLocalData();
+                    renderInventoryTable();
+                    showLoading(false);
+                    showAlert('تم حفظ البيانات في Google Sheets بنجاح', 'success');
+                } else {
+                    showLoading(false);
+                    showAlert('حدث خطأ في حفظ البيانات: ' + result.error, 'error');
+                }
+                
+            } catch (error) {
+                console.error('خطأ في الحفظ:', error);
                 showLoading(false);
+                showAlert('تم حفظ البيانات محلياً. حدث خطأ في الاتصال بالخادم.', 'warning');
+            }
+        }
+        
+        // استيراد البيانات من Google Sheets
+        async function importFromGoogleSheets() {
+            if (!isOnline) {
+                showAlert('لا يمكن استيراد البيانات بدون اتصال بالإنترنت', 'error');
+                return;
+            }
+            
+            showLoading('جاري استيراد البيانات من Google Sheets...');
+            
+            try {
+                // استخدام GET لجلب البيانات
+                const response = await fetch(API_URL);
+                const data = await response.json();
                 
-                // نظراً لأننا نستخدم no-cors، لا يمكننا قراءة الاستجابة
-                // لكننا نفترض أن العملية نجحت
-                showAlert(`تم حفظ البيانات ومزامنتها مع الخادم بنجاح (${quantities.length} سجل)`, 'success');
+                if (data && data.length > 0) {
+                    let importedCount = 0;
+                    let updatedCount = 0;
+                    
+                    data.forEach(item => {
+                        if (item.productNumber && item.productName && item.quantity && item.expiryDate) {
+                            // البحث عن المنتج
+                            let product = products.find(p => p.number === item.productNumber);
+                            
+                            if (!product) {
+                                const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 1000;
+                                product = {
+                                    id: maxId + 1,
+                                    name: item.productName,
+                                    number: item.productNumber
+                                };
+                                products.push(product);
+                                importedCount++;
+                            }
+                            
+                            // إضافة البيانات
+                            inventoryData.push({
+                                id: Date.now() + Math.random(),
+                                productId: product.id,
+                                productName: item.productName,
+                                productNumber: item.productNumber,
+                                quantity: parseInt(item.quantity),
+                                expiryDate: item.expiryDate,
+                                dateAdded: new Date().toLocaleDateString('ar-SA'),
+                                lastModified: new Date().toISOString(),
+                                synced: true,
+                                source: 'google_sheets_import'
+                            });
+                            updatedCount++;
+                        }
+                    });
+                    
+                    if (importedCount > 0 || updatedCount > 0) {
+                        saveLocalData();
+                        renderInventoryTable();
+                        showLoading(false);
+                        showAlert(`تم استيراد ${importedCount} منتج جديد وتحديث ${updatedCount} سجل`, 'success');
+                    } else {
+                        showLoading(false);
+                        showAlert('لا توجد بيانات جديدة في Google Sheets', 'info');
+                    }
+                } else {
+                    showLoading(false);
+                    showAlert('لا توجد بيانات في Google Sheets', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('خطأ في الاستيراد:', error);
+                showLoading(false);
+                showAlert(`فشل استيراد البيانات: ${error.message}`, 'error');
+            }
+        }
+        
+        // مزامنة مع Google Sheets
+        async function syncWithGoogleSheets() {
+            if (!isOnline) {
+                showAlert('لا يمكن مزامنة البيانات بدون اتصال بالإنترنت', 'error');
+                return;
+            }
+            
+            showLoading('جاري مزامنة البيانات مع Google Sheets...');
+            
+            try {
+                // أولاً: استيراد البيانات من Google Sheets
+                await importFromGoogleSheets();
+                
+                // ثانياً: إرسال البيانات المحلية غير المزامنة إلى Google Sheets
+                const unsyncedData = inventoryData.filter(item => !item.synced);
+                
+                if (unsyncedData.length > 0) {
+                    // تجميع البيانات حسب المنتج
+                    const groupedData = {};
+                    unsyncedData.forEach(item => {
+                        const key = item.productNumber;
+                        if (!groupedData[key]) {
+                            groupedData[key] = {
+                                productName: item.productName,
+                                productNumber: item.productNumber,
+                                quantities: []
+                            };
+                        }
+                        groupedData[key].quantities.push({
+                            quantity: item.quantity,
+                            expiryDate: item.expiryDate
+                        });
+                    });
+                    
+                    // إرسال كل مجموعة
+                    const keys = Object.keys(groupedData);
+                    let successCount = 0;
+                    
+                    for (const key of keys) {
+                        const data = groupedData[key];
+                        
+                        try {
+                            const response = await fetch(API_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(data)
+                            });
+                            
+                            const result = await response.json();
+                            if (result.result === 'success') {
+                                successCount++;
+                                
+                                // تحديث حالة المزامنة
+                                inventoryData.forEach(item => {
+                                    if (item.productNumber === data.productNumber) {
+                                        item.synced = true;
+                                        item.lastSynced = new Date().toISOString();
+                                    }
+                                });
+                            }
+                        } catch (error) {
+                            console.error(`خطأ في مزامنة ${data.productName}:`, error);
+                        }
+                    }
+                    
+                    saveLocalData();
+                    renderInventoryTable();
+                    
+                    if (successCount > 0) {
+                        showAlert(`تمت مزامنة ${successCount} منتج بنجاح`, 'success');
+                    }
+                }
+                
+                showLoading(false);
                 
             } catch (error) {
                 console.error('خطأ في المزامنة:', error);
                 showLoading(false);
-                
-                // تخزين البيانات للمزامنة لاحقاً
-                quantities.forEach(item => {
-                    pendingSyncData.push({
-                        productName: product.name,
-                        productNumber: product.number,
-                        quantity: item.quantity,
-                        expiryDate: item.expiryDate,
-                        timestamp: new Date().toISOString(),
-                        error: error.message
-                    });
-                });
-                
-                localStorage.setItem('pendingSyncData', JSON.stringify(pendingSyncData));
-                
-                showAlert('تم حفظ البيانات محلياً ولكن حدث خطأ في المزامنة مع الخادم. سيتم إعادة المحاولة تلقائياً عند الاتصال.', 'warning');
+                showAlert(`فشلت المزامنة: ${error.message}`, 'error');
             }
         }
         
-        async function syncPendingData() {
-            if (pendingSyncData.length === 0 || !isOnline) return;
+        // تصدير البيانات إلى ملف CSV
+        async function exportToCSV() {
+            showLoading('جاري تحضير البيانات للتصدير...');
             
-            showLoading(`جاري مزامنة ${pendingSyncData.length} سجل معلق...`);
-            
-            try {
-                // تجميع البيانات حسب المنتج
-                const groupedData = {};
-                pendingSyncData.forEach(item => {
-                    const key = `${item.productNumber}-${item.productName}`;
-                    if (!groupedData[key]) {
-                        groupedData[key] = {
-                            productName: item.productName,
-                            productNumber: item.productNumber,
-                            quantities: []
-                        };
+            setTimeout(() => {
+                try {
+                    if (inventoryData.length === 0) {
+                        showLoading(false);
+                        showAlert('لا توجد بيانات للتصدير', 'warning');
+                        return;
                     }
-                    groupedData[key].quantities.push({
-                        quantity: item.quantity,
-                        expiryDate: item.expiryDate
-                    });
-                });
-                
-                // إرسال كل مجموعة بيانات
-                const keys = Object.keys(groupedData);
-                let successCount = 0;
-                let errorCount = 0;
-                
-                for (const key of keys) {
-                    const data = groupedData[key];
                     
-                    try {
-                        const payload = {
-                            productNumber: data.productNumber,
-                            productName: data.productName,
-                            quantities: data.quantities
-                        };
-                        
-                        await fetch(API_URL, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        successCount++;
-                    } catch (error) {
-                        console.error(`خطأ في مزامنة ${data.productName}:`, error);
-                        errorCount++;
-                    }
+                    // إنشاء محتوى CSV
+                    let csvContent = "رقم الصنف,اسم الصنف,الكمية,تاريخ الانتهاء,تاريخ الإضافة,حالة المزامنة\n";
+                    
+                    inventoryData.forEach(item => {
+                        const syncStatus = item.synced ? 'مزامن' : 'غير مزامن';
+                        csvContent += `"${item.productNumber}","${item.productName}",${item.quantity},"${item.expiryDate}","${item.dateAdded}","${syncStatus}"\n`;
+                    });
+                    
+                    // إنشاء رابط تحميل
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    const url = URL.createObjectURL(blob);
+                    
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `جرد_المنتجات_${new Date().toISOString().slice(0,10)}.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showLoading(false);
+                    showAlert(`تم تصدير ${inventoryData.length} سجل إلى ملف CSV`, 'success');
+                    
+                } catch (error) {
+                    console.error('خطأ في التصدير:', error);
+                    showLoading(false);
+                    showAlert('فشل تصدير البيانات', 'error');
                 }
-                
-                // تحديث البيانات المحلية
-                inventoryData.forEach(item => {
-                    item.synced = true;
-                    item.lastSynced = new Date().toISOString();
-                });
-                
-                saveLocalData();
-                
-                // مسح البيانات المعلقة
-                pendingSyncData = [];
-                localStorage.removeItem('pendingSyncData');
-                
-                showLoading(false);
-                
-                if (errorCount === 0) {
-                    showAlert(`تم مزامنة جميع البيانات المعلقة بنجاح (${successCount} منتج)`, 'success');
-                } else {
-                    showAlert(`تم مزامنة ${successCount} منتج بنجاح، وفشل ${errorCount}`, 'warning');
-                }
-                
-            } catch (error) {
-                console.error('خطأ في مزامنة البيانات المعلقة:', error);
-                showLoading(false);
-                showAlert('فشلت مزامنة البيانات المعلقة. سيتم المحاولة مرة أخرى لاحقاً.', 'error');
-            }
+            }, 500);
         }
         
         function clearForm() {
@@ -1557,7 +1637,7 @@
                     <div class="no-data">
                         <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 10px; color: #ccc;"></i><br>
                         لا توجد بيانات مخزنة بعد.<br>
-                        استخدم النموذج أعلاه لإضافة بيانات جديدة أو استيراد البيانات من جوجل شيتس.
+                        استخدم النموذج أعلاه لإضافة بيانات جديدة أو استيراد البيانات من Google Sheets.
                     </div>
                 `;
                 return;
@@ -1694,176 +1774,11 @@
             }
         }
         
-        // استيراد البيانات من جوجل شيتس باستخدام API
-        async function importFromGoogleSheets() {
-            if (!isOnline) {
-                showAlert('لا يمكن استيراد البيانات بدون اتصال بالإنترنت', 'error');
-                return;
-            }
-            
-            showLoading('جاري استيراد البيانات من جوجل شيت...');
-            
-            try {
-                const response = await fetch(`${API_URL}?action=getAllData`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-                
-                // لسوء الحظ، مع no-cors لا يمكننا قراءة الاستجابة
-                // لذلك سنعتمد على البيانات المحلية كمثال
-                showLoading(false);
-                
-                // في التطبيق الحقيقي، سنقوم بجلب البيانات من الخادم
-                // لكن هنا سنعرض رسالة توضيحية
-                showAlert('وظيفة الاستيراد تحتاج إلى تعديل API ليعمل بشكل صحيح مع CORS. جرب مزامنة البيانات بدلاً من ذلك.', 'warning');
-                
-            } catch (error) {
-                console.error('خطأ في الاستيراد:', error);
-                showLoading(false);
-                showAlert(`فشل استيراد البيانات: ${error.message}`, 'error');
-            }
-        }
-        
-        // مزامنة مع جوجل شيتس باستخدام API
-        async function syncWithGoogleSheets() {
-            if (!isOnline) {
-                showAlert('لا يمكن مزامنة البيانات بدون اتصال بالإنترنت', 'error');
-                return;
-            }
-            
-            showLoading('جاري مزامنة البيانات مع جوجل شيت...');
-            
-            try {
-                // محاولة الحصول على البيانات من الخادم
-                // ملاحظة: مع no-cors لا يمكننا قراءة الاستجابة
-                await fetch(`${API_URL}?action=getAllData`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-                
-                // مزامنة البيانات المحلية مع الخادم
-                if (inventoryData.length > 0) {
-                    // تجميع البيانات حسب المنتج للمزامنة
-                    const groupedData = {};
-                    inventoryData.forEach(item => {
-                        const key = `${item.productNumber}-${item.productName}`;
-                        if (!groupedData[key]) {
-                            groupedData[key] = {
-                                productName: item.productName,
-                                productNumber: item.productNumber,
-                                quantities: []
-                            };
-                        }
-                        groupedData[key].quantities.push({
-                            quantity: item.quantity,
-                            expiryDate: item.expiryDate
-                        });
-                    });
-                    
-                    // إرسال البيانات
-                    const keys = Object.keys(groupedData);
-                    let successCount = 0;
-                    
-                    for (const key of keys) {
-                        const data = groupedData[key];
-                        
-                        try {
-                            const payload = {
-                                productNumber: data.productNumber,
-                                productName: data.productName,
-                                quantities: data.quantities
-                            };
-                            
-                            await fetch(API_URL, {
-                                method: 'POST',
-                                mode: 'no-cors',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(payload)
-                            });
-                            
-                            // تحديث حالة المزامنة في البيانات المحلية
-                            inventoryData.forEach(item => {
-                                if (item.productNumber === data.productNumber && item.productName === data.productName) {
-                                    item.synced = true;
-                                    item.lastSynced = new Date().toISOString();
-                                }
-                            });
-                            
-                            successCount++;
-                        } catch (error) {
-                            console.error(`خطأ في مزامنة ${data.productName}:`, error);
-                        }
-                    }
-                    
-                    saveLocalData();
-                    renderInventoryTable();
-                    showLoading(false);
-                    
-                    showAlert(`تمت مزامنة ${successCount} منتج بنجاح`, 'success');
-                } else {
-                    showLoading(false);
-                    showAlert('لا توجد بيانات محلية للمزامنة', 'info');
-                }
-                
-            } catch (error) {
-                console.error('خطأ في المزامنة:', error);
-                showLoading(false);
-                showAlert(`فشلت المزامنة: ${error.message}`, 'error');
-            }
-        }
-        
-        // تصدير البيانات إلى ملف CSV
-        async function exportToCSV() {
-            showLoading('جاري تحضير البيانات للتصدير...');
-            
-            setTimeout(() => {
-                try {
-                    if (inventoryData.length === 0) {
-                        showLoading(false);
-                        showAlert('لا توجد بيانات للتصدير', 'warning');
-                        return;
-                    }
-                    
-                    // إنشاء محتوى CSV
-                    let csvContent = "رقم الصنف,اسم الصنف,الكمية,تاريخ الانتهاء,تاريخ الإضافة,حالة المزامنة\n";
-                    
-                    inventoryData.forEach(item => {
-                        const syncStatus = item.synced ? 'مزامن' : 'غير مزامن';
-                        csvContent += `"${item.productNumber}","${item.productName}",${item.quantity},"${item.expiryDate}","${item.dateAdded}","${syncStatus}"\n`;
-                    });
-                    
-                    // إنشاء رابط تحميل
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement("a");
-                    const url = URL.createObjectURL(blob);
-                    
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", `جرد_المنتجات_${new Date().toISOString().slice(0,10)}.csv`);
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    showLoading(false);
-                    showAlert(`تم تصدير ${inventoryData.length} سجل إلى ملف CSV`, 'success');
-                    
-                } catch (error) {
-                    console.error('خطأ في التصدير:', error);
-                    showLoading(false);
-                    showAlert('فشل تصدير البيانات', 'error');
-                }
-            }, 500);
-        }
-        
         function clearLocalData() {
             if (confirm('هل أنت متأكد من مسح جميع البيانات المحلية؟ سيتم حذف جميع المنتجات والكميات.')) {
                 inventoryData = [];
                 products = [];
-                pendingSyncData = [];
                 saveLocalData();
-                localStorage.removeItem('pendingSyncData');
                 renderInventoryTable();
                 clearForm();
                 showAlert('تم مسح جميع البيانات المحلية', 'success');
@@ -1924,11 +1839,9 @@
             try {
                 const savedData = localStorage.getItem('inventoryData');
                 const savedProducts = localStorage.getItem('products');
-                const savedPendingData = localStorage.getItem('pendingSyncData');
                 
                 if (savedData) inventoryData = JSON.parse(savedData);
                 if (savedProducts) products = JSON.parse(savedProducts);
-                if (savedPendingData) pendingSyncData = JSON.parse(savedPendingData);
                 
                 // تحديث عدد السجلات المحملة
                 if (inventoryData.length > 0) {
@@ -1938,7 +1851,6 @@
                 console.error('خطأ في تحميل البيانات:', e);
                 inventoryData = [];
                 products = [];
-                pendingSyncData = [];
             }
         }
         
