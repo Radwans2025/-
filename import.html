@@ -1,0 +1,62 @@
+function doGet(e) {
+  try {
+    // الحصول على البيانات من Google Sheets
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const data = sheet.getDataRange().getValues();
+    
+    // تحويل البيانات إلى تنسيق JSON
+    const result = [];
+    
+    // افتراض أن العمود A هو رقم المنتج والعمود B هو اسم المنتج
+    // تخطي الصف الأول (العناوين)
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      if (row[0] && row[1]) { // إذا كان هناك رقم واسم
+        result.push({
+          productNumber: row[0].toString().trim(),
+          productName: row[1].toString().trim()
+        });
+      }
+    }
+    
+    // إرجاع البيانات كـ JSON
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    // في حالة حدوث خطأ
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        error: error.message,
+        result: "error"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    // للاستخدام المستقبلي إذا أردت إضافة ميزات إضافية
+    const data = JSON.parse(e.postData.contents);
+    
+    // هنا يمكنك إضافة منطق لحفظ البيانات إذا لزم الأمر
+    // ولكن حسب متطلباتك، نحن نريد فقط قراءة البيانات
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        result: "success",
+        message: "تم استلام البيانات بنجاح",
+        receivedData: data
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        error: error.message,
+        result: "error"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
