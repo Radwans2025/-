@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الجرد المتطور</title>
+    <title>تطبيق الجرد المتطور - الصفحة الرئيسية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -30,7 +30,7 @@
             color: #333;
             line-height: 1.4;
             padding-bottom: 10px;
-            font-size: 14px;
+            font-size: 13px; /* تقليل حجم الخط العام */
             -webkit-tap-highlight-color: transparent;
         }
         
@@ -48,7 +48,7 @@
         }
         
         .header-title {
-            font-size: 1.1rem;
+            font-size: 1rem; /* تصغير حجم الخط */
             font-weight: 600;
         }
         
@@ -62,7 +62,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem; /* تصغير حجم الخط */
             padding: 4px 8px;
             border-radius: 12px;
             background-color: rgba(255, 255, 255, 0.1);
@@ -94,7 +94,7 @@
             background: none;
             border: none;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* تصغير حجم الخط */
             cursor: pointer;
             padding: 5px 10px;
             border-radius: 4px;
@@ -113,7 +113,7 @@
             top: 100%;
             right: 10px;
             background-color: white;
-            min-width: 200px;
+            min-width: 180px; /* تصغير العرض */
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             border-radius: 4px;
             z-index: 1000;
@@ -126,12 +126,12 @@
         }
         
         .dropdown-item {
-            padding: 10px 12px;
+            padding: 8px 10px; /* تصغير padding */
             color: var(--dark);
             text-decoration: none;
             display: block;
             border-bottom: 1px solid #eee;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* تصغير حجم الخط */
             transition: background-color 0.2s;
             cursor: pointer;
         }
@@ -146,26 +146,27 @@
         
         .dropdown-item i {
             margin-left: 8px;
-            width: 18px;
+            width: 16px;
             text-align: center;
+            font-size: 0.9rem; /* تصغير حجم الأيقونات */
         }
         
         /* المحتوى الرئيسي */
         .container {
-            padding: 10px;
+            padding: 8px; /* تقليل padding */
             width: 100%;
             max-width: 100%;
         }
         
         /* تنبيهات */
         .alert {
-            padding: 10px 12px;
+            padding: 8px 10px; /* تصغير padding */
             border-radius: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* تصغير حجم الخط */
             position: relative;
-            padding-left: 40px;
+            padding-left: 35px; /* تقليل padding */
         }
         
         .alert.show {
@@ -180,10 +181,10 @@
         
         .alert i {
             position: absolute;
-            right: 12px;
+            right: 10px; /* تقليل المسافة */
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.2rem;
+            font-size: 1rem; /* تصغير حجم الأيقونات */
         }
         
         .alert-success {
@@ -215,14 +216,14 @@
             background-color: white;
             border-radius: 4px;
             box-shadow: var(--shadow);
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 10px; /* تقليل padding */
+            margin-bottom: 8px;
         }
         
         .form-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             flex-wrap: nowrap;
         }
         
@@ -233,16 +234,17 @@
         
         .form-input {
             width: 100%;
-            padding: 8px 12px;
+            padding: 7px 10px; /* تقليل padding */
             border: 1px solid var(--border);
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* تصغير حجم الخط */
             transition: border-color 0.3s;
-            height: 38px;
+            height: 36px; /* تقليل الارتفاع */
         }
         
         .form-input::placeholder {
             color: #888;
+            font-size: 0.85rem; /* تصغير حجم الخط */
         }
         
         .form-input:focus {
@@ -282,10 +284,10 @@
         }
         
         .autocomplete-item {
-            padding: 8px 12px;
+            padding: 7px 10px; /* تقليل padding */
             cursor: pointer;
             border-bottom: 1px solid #f0f0f0;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* تصغير حجم الخط */
             transition: background-color 0.2s;
         }
         
@@ -301,7 +303,7 @@
         .autocomplete-item .product-info {
             display: block;
             color: #666;
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* تصغير حجم الخط */
             margin-top: 2px;
         }
         
@@ -310,27 +312,27 @@
             background-color: white;
             border-radius: 4px;
             box-shadow: var(--shadow);
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 10px; /* تقليل padding */
+            margin-bottom: 8px;
         }
         
         .section-title {
             font-weight: 600;
             color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-size: 0.9rem; /* تصغير حجم الخط */
         }
         
         .quantity-rows-container {
-            max-height: 200px;
+            max-height: 180px; /* تقليل الارتفاع */
             overflow-y: auto;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .quantity-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             align-items: center;
             animation: slideIn 0.2s ease-out;
         }
@@ -355,10 +357,10 @@
             color: var(--danger);
             border: none;
             border-radius: 4px;
-            padding: 8px 6px;
+            padding: 7px 5px; /* تقليل padding */
             cursor: pointer;
-            font-size: 0.8rem;
-            height: 38px;
+            font-size: 0.75rem; /* تصغير حجم الخط */
+            height: 36px; /* تقليل الارتفاع */
             transition: background-color 0.2s;
         }
         
@@ -371,12 +373,12 @@
             color: var(--success);
             border: 1px dashed #c8e6c9;
             border-radius: 4px;
-            padding: 8px;
+            padding: 7px; /* تقليل padding */
             width: 100%;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* تصغير حجم الخط */
             cursor: pointer;
-            margin-top: 6px;
-            height: 38px;
+            margin-top: 5px;
+            height: 36px; /* تقليل الارتفاع */
             transition: background-color 0.2s;
         }
         
@@ -388,20 +390,20 @@
         .action-buttons {
             display: flex;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .btn {
             flex: 1;
-            padding: 10px;
+            padding: 9px; /* تقليل padding */
             border: none;
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* تصغير حجم الخط */
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
-            height: 40px;
+            height: 38px; /* تقليل الارتفاع */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -431,29 +433,29 @@
             background-color: white;
             border-radius: 4px;
             box-shadow: var(--shadow);
-            padding: 12px;
+            padding: 10px; /* تقليل padding */
             overflow-x: auto;
-            margin-top: 10px;
-            max-height: 450px;
+            margin-top: 8px;
+            max-height: 480px; /* زيادة الارتفاع لعرض المزيد من البيانات */
             overflow-y: auto;
         }
         
         .table-title {
             font-weight: 600;
             color: var(--primary);
-            margin-bottom: 8px;
-            font-size: 1rem;
+            margin-bottom: 6px;
+            font-size: 0.95rem; /* تصغير حجم الخط */
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            font-size: 0.8rem; /* تصغير حجم الخط */
             min-width: 700px;
         }
         
         th, td {
-            padding: 8px 10px;
+            padding: 6px 8px; /* تقليل padding */
             text-align: center;
             border: 1px solid var(--border);
         }
@@ -465,6 +467,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            font-size: 0.85rem; /* تصغير حجم الخط */
         }
         
         /* تثبيت الأعمدة المهمة */
@@ -503,13 +506,13 @@
         }
         
         .action-btn {
-            padding: 4px 8px;
+            padding: 4px 6px; /* تقليل padding */
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* تصغير حجم الخط */
             transition: background-color 0.2s;
-            min-width: 55px;
+            min-width: 50px;
         }
         
         .edit-btn {
@@ -537,7 +540,7 @@
         }
         
         .qty-col, .expiry-col {
-            min-width: 90px;
+            min-width: 85px;
         }
         
         /* نافذة اختيار التاريخ */
@@ -573,7 +576,7 @@
             color: white;
             padding: 12px;
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.95rem; /* تصغير حجم الخط */
         }
         
         .date-picker-body {
@@ -595,11 +598,11 @@
             font-weight: 600;
             margin-bottom: 5px;
             color: #555;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* تصغير حجم الخط */
         }
         
         .month-year-value {
-            font-size: 1.3rem;
+            font-size: 1.2rem; /* تصغير حجم الخط */
             margin: 10px 0;
             color: var(--primary);
             font-weight: 600;
@@ -617,7 +620,7 @@
             width: 35px;
             height: 35px;
             border-radius: 50%;
-            font-size: 1rem;
+            font-size: 0.9rem; /* تصغير حجم الخط */
             cursor: pointer;
             transition: background-color 0.2s;
         }
@@ -655,16 +658,16 @@
             padding: 20px;
             border-radius: 4px;
             text-align: center;
-            min-width: 200px;
-            max-width: 300px;
+            min-width: 180px; /* تقليل العرض */
+            max-width: 280px;
         }
         
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
             border-top: 4px solid var(--secondary);
-            width: 32px;
-            height: 32px;
+            width: 30px; /* تقليل الحجم */
+            height: 30px;
             animation: spin 1s linear infinite;
             margin: 0 auto 10px;
         }
@@ -677,29 +680,30 @@
         /* تذييل الصفحة */
         footer {
             text-align: center;
-            padding: 10px;
+            padding: 8px; /* تقليل padding */
             color: #666;
-            font-size: 0.8rem;
-            margin-top: 10px;
+            font-size: 0.75rem; /* تصغير حجم الخط */
+            margin-top: 8px;
         }
         
         /* رسالة عند عدم وجود بيانات */
         .no-data {
             text-align: center;
-            padding: 25px;
+            padding: 20px; /* تقليل padding */
             color: #777;
             font-style: italic;
+            font-size: 0.9rem; /* تصغير حجم الخط */
         }
         
         /* إشعار العمل بدون إنترنت */
         .offline-notice {
             background-color: #fff3cd;
             color: #856404;
-            padding: 8px 12px;
+            padding: 7px 10px; /* تقليل padding */
             border-radius: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem; /* تصغير حجم الخط */
             text-align: center;
             border: 1px solid #ffeaa7;
         }
@@ -711,6 +715,10 @@
         
         /* تحسينات للهواتف */
         @media (max-width: 768px) {
+            body {
+                font-size: 12px; /* تصغير حجم الخط للهواتف */
+            }
+            
             .form-row {
                 flex-wrap: wrap;
             }
@@ -729,11 +737,11 @@
             }
             
             table {
-                font-size: 0.8rem;
+                font-size: 0.75rem; /* تصغير حجم الخط */
             }
             
             th, td {
-                padding: 6px 8px;
+                padding: 5px 6px; /* تقليل padding */
             }
             
             .action-cell {
@@ -742,17 +750,17 @@
             }
             
             .action-btn {
-                min-width: 45px;
-                font-size: 0.7rem;
-                padding: 3px 6px;
+                min-width: 40px;
+                font-size: 0.65rem; /* تصغير حجم الخط */
+                padding: 2px 4px;
             }
             
             .header-title {
-                font-size: 1rem;
+                font-size: 0.9rem; /* تصغير حجم الخط */
             }
             
             .connection-status {
-                font-size: 0.7rem;
+                font-size: 0.65rem; /* تصغير حجم الخط */
             }
         }
         
@@ -771,7 +779,7 @@
 <body>
     <!-- الهيدر -->
     <header>
-        <div class="header-title">تطبيق الجرد المتطور</div>
+        <div class="header-title">تطبيق الجرد المتطور - الصفحة 1</div>
         <div class="header-controls">
             <div class="connection-status offline" id="connectionStatus">
                 <div class="connection-dot offline" id="connectionDot"></div>
@@ -784,11 +792,8 @@
         
         <!-- القائمة المنسدلة - تم إصلاح موقعها -->
         <div class="dropdown-menu" id="dropdownMenu">
-            <a href="#" class="dropdown-item" id="importData">
-                <i class="fas fa-file-import"></i> استيراد من جوجل شيت
-            </a>
-            <a href="#" class="dropdown-item" id="syncData">
-                <i class="fas fa-sync-alt"></i> مزامنة البيانات
+            <a href="import.html" class="dropdown-item" target="_blank">
+                <i class="fas fa-file-import"></i> الصفحة 2 (استيراد الأرقام)
             </a>
             <a href="#" class="dropdown-item" id="exportData">
                 <i class="fas fa-file-export"></i> تصدير البيانات
@@ -905,7 +910,7 @@
     
     <!-- تذييل الصفحة -->
     <footer>
-        تطبيق الجرد المتطور © 2023 - يعمل مع أو بدون إنترنت
+        تطبيق الجرد المتطور © 2023 - الصفحة الرئيسية
     </footer>
     
     <script>
@@ -918,9 +923,6 @@
         let selectedYear = 2027;
         let isEditing = false;
         let isOnline = navigator.onLine;
-        
-        // 🔴🔴🔴 رابط Google Apps Script الجديد - سيعمل الآن 🔴🔴🔴
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz5Y1kennEqj7cUpejd8E6khWIfdUKjXH1wa0D7j_5EyawjpSWL9VJb6U_l9FC1dBtwcA/exec';
         
         // تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', function() {
@@ -937,6 +939,7 @@
             
             // تحميل البيانات المحلية
             loadLocalData();
+            loadImportedProducts(); // تحميل المنتجات المستوردة من الصفحة 2
             setupEventListeners();
             addQuantityRow();
             renderInventoryTable();
@@ -971,6 +974,28 @@
             }
         }
         
+        // دالة لتحميل المنتجات المستوردة من الصفحة 2
+        function loadImportedProducts() {
+            try {
+                const importedProducts = localStorage.getItem('importedProducts');
+                if (importedProducts) {
+                    const parsedProducts = JSON.parse(importedProducts);
+                    
+                    // دمج المنتجات المستوردة مع المنتجات المحلية
+                    parsedProducts.forEach(importedProduct => {
+                        // تجنب التكرار
+                        if (!products.some(p => p.number === importedProduct.number)) {
+                            products.push(importedProduct);
+                        }
+                    });
+                    
+                    console.log(`تم تحميل ${parsedProducts.length} منتج من الصفحة الثانية`);
+                }
+            } catch (e) {
+                console.error('خطأ في تحميل المنتجات المستوردة:', e);
+            }
+        }
+        
         function setupEventListeners() {
             // القائمة المنسدلة - إصلاح الإغلاق عند النقر خارجها
             document.getElementById('menuToggle').addEventListener('click', toggleDropdownMenu);
@@ -985,12 +1010,10 @@
             });
             
             // خيارات القائمة
-            document.getElementById('importData').addEventListener('click', importFromGoogleSheets);
-            document.getElementById('syncData').addEventListener('click', syncWithGoogleSheets);
             document.getElementById('exportData').addEventListener('click', exportToCSV);
             document.getElementById('clearData').addEventListener('click', clearLocalData);
             
-            // البحث الذكي والربط التبادلي - تم تحسينه
+            // البحث الذكي والربط التبادلي
             document.getElementById('productName').addEventListener('input', handleProductNameSearch);
             document.getElementById('productNumber').addEventListener('input', handleProductNumberSearch);
             
@@ -1048,6 +1071,7 @@
                 return;
             }
             
+            // البحث في المنتجات المحلية والمستوردة
             const filteredProducts = products.filter(product => 
                 (product.name && product.name.toLowerCase().includes(query.toLowerCase()))
             );
@@ -1085,7 +1109,7 @@
             autocompleteList.classList.add('show');
         }
         
-        // البحث الذكي بالرقم (الربط التبادلي) - تم تحسينه
+        // البحث الذكي بالرقم (الربط التبادلي)
         function handleProductNumberSearch() {
             const input = document.getElementById('productNumber');
             const query = input.value.trim();
@@ -1278,7 +1302,7 @@
             currentDateInput = null;
         }
         
-        async function saveProductData() {
+        function saveProductData() {
             const productName = document.getElementById('productName').value.trim();
             const productNumber = document.getElementById('productNumber').value.trim();
             
@@ -1350,8 +1374,7 @@
                     quantity: item.quantity,
                     expiryDate: item.expiryDate,
                     dateAdded: new Date().toLocaleDateString('ar-SA'),
-                    lastModified: new Date().toISOString(),
-                    synced: false
+                    lastModified: new Date().toISOString()
                 });
             });
             
@@ -1359,217 +1382,8 @@
             saveLocalData();
             renderInventoryTable();
             
-            // إرسال البيانات إلى Google Sheets إذا كان هناك اتصال
-            if (isOnline) {
-                await saveToGoogleSheets(product, quantities);
-            } else {
-                showAlert(`تم حفظ البيانات محلياً. سيتم المزامنة عند الاتصال بالإنترنت.`, 'warning');
-            }
-            
+            showAlert(`تم حفظ ${quantities.length} كمية للمنتج ${productName}`, 'success');
             clearForm();
-        }
-        
-        // دالة جديدة لحفظ البيانات إلى Google Sheets عبر Google Apps Script
-        async function saveToGoogleSheets(product, quantities) {
-            showLoading('جاري حفظ البيانات إلى Google Sheets...');
-            
-            try {
-                const dataToSend = {
-                    productNumber: product.number,
-                    productName: product.name,
-                    quantities: quantities
-                };
-                
-                // استخدام fetch مع POST
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSend)
-                });
-                
-                const result = await response.json();
-                
-                if (result.result === 'success') {
-                    // تحديث حالة المزامنة
-                    inventoryData.forEach(item => {
-                        if (item.productId === product.id) {
-                            item.synced = true;
-                            item.lastSynced = new Date().toISOString();
-                        }
-                    });
-                    
-                    saveLocalData();
-                    renderInventoryTable();
-                    showLoading(false);
-                    showAlert('تم حفظ البيانات في Google Sheets بنجاح', 'success');
-                } else {
-                    showLoading(false);
-                    showAlert('حدث خطأ في حفظ البيانات: ' + result.error, 'error');
-                }
-                
-            } catch (error) {
-                console.error('خطأ في الحفظ:', error);
-                showLoading(false);
-                showAlert('تم حفظ البيانات محلياً. حدث خطأ في الاتصال بالخادم.', 'warning');
-            }
-        }
-        
-        // استيراد البيانات من Google Sheets
-        async function importFromGoogleSheets() {
-            if (!isOnline) {
-                showAlert('لا يمكن استيراد البيانات بدون اتصال بالإنترنت', 'error');
-                return;
-            }
-            
-            showLoading('جاري استيراد البيانات من Google Sheets...');
-            
-            try {
-                // استخدام GET لجلب البيانات
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                if (data && data.length > 0) {
-                    let importedCount = 0;
-                    let updatedCount = 0;
-                    
-                    data.forEach(item => {
-                        if (item.productNumber && item.productName && item.quantity && item.expiryDate) {
-                            // البحث عن المنتج
-                            let product = products.find(p => p.number === item.productNumber);
-                            
-                            if (!product) {
-                                const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 1000;
-                                product = {
-                                    id: maxId + 1,
-                                    name: item.productName,
-                                    number: item.productNumber
-                                };
-                                products.push(product);
-                                importedCount++;
-                            }
-                            
-                            // إضافة البيانات
-                            inventoryData.push({
-                                id: Date.now() + Math.random(),
-                                productId: product.id,
-                                productName: item.productName,
-                                productNumber: item.productNumber,
-                                quantity: parseInt(item.quantity),
-                                expiryDate: item.expiryDate,
-                                dateAdded: new Date().toLocaleDateString('ar-SA'),
-                                lastModified: new Date().toISOString(),
-                                synced: true,
-                                source: 'google_sheets_import'
-                            });
-                            updatedCount++;
-                        }
-                    });
-                    
-                    if (importedCount > 0 || updatedCount > 0) {
-                        saveLocalData();
-                        renderInventoryTable();
-                        showLoading(false);
-                        showAlert(`تم استيراد ${importedCount} منتج جديد وتحديث ${updatedCount} سجل`, 'success');
-                    } else {
-                        showLoading(false);
-                        showAlert('لا توجد بيانات جديدة في Google Sheets', 'info');
-                    }
-                } else {
-                    showLoading(false);
-                    showAlert('لا توجد بيانات في Google Sheets', 'warning');
-                }
-                
-            } catch (error) {
-                console.error('خطأ في الاستيراد:', error);
-                showLoading(false);
-                showAlert(`فشل استيراد البيانات: ${error.message}`, 'error');
-            }
-        }
-        
-        // مزامنة مع Google Sheets
-        async function syncWithGoogleSheets() {
-            if (!isOnline) {
-                showAlert('لا يمكن مزامنة البيانات بدون اتصال بالإنترنت', 'error');
-                return;
-            }
-            
-            showLoading('جاري مزامنة البيانات مع Google Sheets...');
-            
-            try {
-                // أولاً: استيراد البيانات من Google Sheets
-                await importFromGoogleSheets();
-                
-                // ثانياً: إرسال البيانات المحلية غير المزامنة إلى Google Sheets
-                const unsyncedData = inventoryData.filter(item => !item.synced);
-                
-                if (unsyncedData.length > 0) {
-                    // تجميع البيانات حسب المنتج
-                    const groupedData = {};
-                    unsyncedData.forEach(item => {
-                        const key = item.productNumber;
-                        if (!groupedData[key]) {
-                            groupedData[key] = {
-                                productName: item.productName,
-                                productNumber: item.productNumber,
-                                quantities: []
-                            };
-                        }
-                        groupedData[key].quantities.push({
-                            quantity: item.quantity,
-                            expiryDate: item.expiryDate
-                        });
-                    });
-                    
-                    // إرسال كل مجموعة
-                    const keys = Object.keys(groupedData);
-                    let successCount = 0;
-                    
-                    for (const key of keys) {
-                        const data = groupedData[key];
-                        
-                        try {
-                            const response = await fetch(API_URL, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(data)
-                            });
-                            
-                            const result = await response.json();
-                            if (result.result === 'success') {
-                                successCount++;
-                                
-                                // تحديث حالة المزامنة
-                                inventoryData.forEach(item => {
-                                    if (item.productNumber === data.productNumber) {
-                                        item.synced = true;
-                                        item.lastSynced = new Date().toISOString();
-                                    }
-                                });
-                            }
-                        } catch (error) {
-                            console.error(`خطأ في مزامنة ${data.productName}:`, error);
-                        }
-                    }
-                    
-                    saveLocalData();
-                    renderInventoryTable();
-                    
-                    if (successCount > 0) {
-                        showAlert(`تمت مزامنة ${successCount} منتج بنجاح`, 'success');
-                    }
-                }
-                
-                showLoading(false);
-                
-            } catch (error) {
-                console.error('خطأ في المزامنة:', error);
-                showLoading(false);
-                showAlert(`فشلت المزامنة: ${error.message}`, 'error');
-            }
         }
         
         // تصدير البيانات إلى ملف CSV
@@ -1585,11 +1399,10 @@
                     }
                     
                     // إنشاء محتوى CSV
-                    let csvContent = "رقم الصنف,اسم الصنف,الكمية,تاريخ الانتهاء,تاريخ الإضافة,حالة المزامنة\n";
+                    let csvContent = "رقم الصنف,اسم الصنف,الكمية,تاريخ الانتهاء,تاريخ الإضافة\n";
                     
                     inventoryData.forEach(item => {
-                        const syncStatus = item.synced ? 'مزامن' : 'غير مزامن';
-                        csvContent += `"${item.productNumber}","${item.productName}",${item.quantity},"${item.expiryDate}","${item.dateAdded}","${syncStatus}"\n`;
+                        csvContent += `"${item.productNumber}","${item.productName}",${item.quantity},"${item.expiryDate}","${item.dateAdded}"\n`;
                     });
                     
                     // إنشاء رابط تحميل
@@ -1635,9 +1448,9 @@
             if (inventoryData.length === 0) {
                 tableWrapper.innerHTML = `
                     <div class="no-data">
-                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 10px; color: #ccc;"></i><br>
+                        <i class="fas fa-box-open" style="font-size: 2.5rem; margin-bottom: 8px; color: #ccc;"></i><br>
                         لا توجد بيانات مخزنة بعد.<br>
-                        استخدم النموذج أعلاه لإضافة بيانات جديدة أو استيراد البيانات من Google Sheets.
+                        استخدم النموذج أعلاه لإضافة بيانات جديدة.
                     </div>
                 `;
                 return;
@@ -1653,15 +1466,13 @@
                         quantities: [],
                         expiries: [],
                         totalQuantity: 0,
-                        records: [],
-                        synced: item.synced || false
+                        records: []
                     };
                 }
                 groupedData[item.productId].quantities.push(item.quantity);
                 groupedData[item.productId].expiries.push(item.expiryDate);
                 groupedData[item.productId].totalQuantity += item.quantity;
                 groupedData[item.productId].records.push(item);
-                groupedData[item.productId].synced = groupedData[item.productId].synced && item.synced;
             });
             
             // حساب أقصى عدد للكميات
@@ -1700,11 +1511,10 @@
             // إضافة الصفوف
             Object.keys(groupedData).forEach(productId => {
                 const product = groupedData[productId];
-                const syncStatus = product.synced ? '<i class="fas fa-check-circle" style="color: #27ae60; margin-right: 5px;" title="مزامن"></i>' : '<i class="fas fa-clock" style="color: #f39c12; margin-right: 5px;" title="بانتظار المزامنة"></i>';
                 
                 tableHTML += `
                     <tr>
-                        <td>${syncStatus} ${product.productNumber}</td>
+                        <td>${product.productNumber}</td>
                         <td>${product.productName}</td>
                 `;
                 
